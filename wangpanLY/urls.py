@@ -30,4 +30,7 @@ urlpatterns = [
     path('index/main1/<container_name>/', views.create_container),  # 添加容器路由
     path('main4/<container_name>/<object_name>/', views.delete_object),  # 删除文件路由
     path('hmz/main5/<container_name>/', views.delete_container),  # 与前端删除按钮的href对应
+    path('upload/<str:container_name>/', views.upload_file),  # 确保路由以斜杠结尾（变量后自带）
+    path('download/<container_name>/<object_name>/', views.download_file),  # 文件下载路由
+    path('view/<str:container_name>/<path:object_name>/', views.view_file, name='view_file'),
 ]

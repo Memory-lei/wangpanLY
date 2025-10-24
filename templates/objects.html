@@ -34,10 +34,19 @@
                 <td>{{key.name}}</td>
                 <td>{{key.last_modified}}</td>
                 <td>{{key.content_type}}</td>
-                <td>{{key.bytes}}</td>
+                <!-- 替换原有<td>{{key.bytes}}</td> -->
+                <td>
+                    {% if key.bytes < 1024 %}
+                        {{ key.bytes }} B
+                    {% elif key.bytes < 1048576 %}
+                        {{ key.bytes|floatformat:1 }} KB
+                    {% else %}
+                        {{ key.bytes|floatformat:1 }} MB
+                    {% endif %}
+                </td>
                 <td>
                     <input class="butt1" type="button" value="查看"
-                           onclick='window.location.href="/main3/{{data2}}/{{key.name}}/{{key.content_type}}"'>
+                           onclick='window.location.href="{% url 'view_file' container_name=data2 object_name=key.name %}"'>
                     <input class="butt1" type="button" value="删除"
                            onclick='window.location.href="/main4/{{data2}}/{{key.name}}"'>
                     <input class="butt1" type="button" value="下载"
@@ -67,10 +76,11 @@
         {% endif %}
 
         <div class="upload-form">
-            <form method="post" action="/upload/{{data2}}" enctype="multipart/form-data">
+<!-- 在objects.html的上传表单中 -->
+            <form class="upload-form" action="/upload/{{ data2 }}/" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="file" name="myfile" />
-                <input type="submit" value="上传" />
+                <input type="file" name="myfile">
+                <input type="submit" value="上传文件">
             </form>
         </div>
 

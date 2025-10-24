@@ -236,3 +236,13 @@ input[type="submit"]:hover {
         font-size: 1.5rem;
     }
 }
+.upload-form input[type="file"] {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.upload-form input[type="submit"] {
+    width: 100%;
+    padding: 8px 0;
+    font-size: 16px;
+}

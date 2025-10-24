@@ -180,3 +180,123 @@ def delete_container(request, container_name):
         return HttpResponse("删除失败：容器不为空，请先删除容器内的文件")
     else:
         return HttpResponse(f"删除容器失败，错误码: {response.status_code}")
+
+
+def upload_file(request, container_name):
+    if 'token' not in request.session:
+        return redirect('/index')
+
+    if request.method == 'POST' and request.FILES.get('myfile'):
+        file = request.FILES['myfile']
+        headers = {
+            'X-Auth-Token': request.session['token'],
+            'Content-Type': file.content_type
+        }
+
+        # 构造上传URL
+        encoded_container = requests.utils.quote(container_name)
+        encoded_filename = requests.utils.quote(file.name)
+        url = f"http://192.168.176.114:8080/v1/AUTH_e0c36a923a334919905c9877eb6fd665/{encoded_container}/{encoded_filename}"
+
+        # 流式上传文件内容
+        response = requests.put(url, data=file.chunks(), headers=headers)
+
+        if response.status_code in [201, 202]:
+            return redirect(f'/objects/{container_name}')
+        else:
+            return HttpResponse(f"文件上传失败，错误码: {response.status_code}")
+
+    return redirect(f'/objects/{container_name}')
+
+
+# 文件下载功能
+def download_file(request, container_name, object_name):
+    if 'token' not in request.session:
+        return redirect('/index')
+
+    headers = {
+        'X-Auth-Token': request.session['token']
+    }
+
+    # 构造下载URL
+    encoded_container = requests.utils.quote(container_name)
+    encoded_object = requests.utils.quote(object_name)
+    url = f"http://192.168.176.114:8080/v1/AUTH_e0c36a923a334919905c9877eb6fd665/{encoded_container}/{encoded_object}"
+
+    # 流式获取文件内容
+    response = requests.get(url, headers=headers, stream=True)
+
+    if response.status_code == 200:
+        # 确定文件MIME类型
+        content_type = response.headers.get('Content-Type', 'application/octet-stream')
+
+        # 构建响应对象
+        response = StreamingHttpResponse(
+            streaming_content=response.iter_content(chunk_size=4096),
+            content_type=content_type
+        )
+        response['Content-Disposition'] = f'attachment; filename="{object_name}"'
+        return response
+    else:
+        return HttpResponse(f"文件下载失败，错误码: {response.status_code}")
+
+
+# 文件查看功能
+def view_file(request, container_name, object_name):
+    # 1. 验证用户登录状态
+    if 'token' not in request.session:
+        return redirect('/index')  # 未登录则跳转登录页
+
+    # 2. 构建请求头（携带认证token）
+    headers = {
+        'X-Auth-Token': request.session['token'],
+        'Accept': '*/*'  # 允许接收所有类型的响应
+    }
+
+    # 3. 处理URL编码（避免特殊字符导致的请求错误）
+    try:
+        encoded_container = requests.utils.quote(container_name, safe='')
+        encoded_object = requests.utils.quote(object_name, safe='')
+    except Exception as e:
+        return HttpResponse(f"文件名编码错误：{str(e)}", status=400)
+
+    # 4. 构建Swift服务的文件访问URL（替换为你的Swift服务地址）
+    swift_base_url = "http://192.168.176.114:8080/v1/AUTH_e0c36a923a334919905c9877eb6fd665"
+    url = f"{swift_base_url}/{encoded_container}/{encoded_object}"
+
+    # 5. 向Swift服务请求文件内容（流式获取，适合大文件）
+    try:
+        # 禁用SSL验证（如果是http服务，可忽略；如果是https且证书无效，需添加verify=False）
+        response = requests.get(url, headers=headers, stream=True, timeout=30)
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"连接Swift服务失败：{str(e)}", status=500)
+
+    # 6. 处理Swift服务的响应
+    if response.status_code != 200:
+        return HttpResponse(
+            f"查看文件失败，Swift返回错误：{response.status_code} {response.reason}",
+            status=response.status_code
+        )
+
+    # 7. 自动识别文件MIME类型（优先使用Swift返回的类型，其次自动猜测）
+    content_type = response.headers.get('Content-Type')
+    if not content_type:
+        # 根据文件名猜测类型（如.pdf -> application/pdf）
+        content_type, _ = mimetypes.guess_type(object_name)
+        content_type = content_type or 'application/octet-stream'  # 默认二进制类型
+
+    # 8. 区分展示类型：文本、图片、PDF等可直接在浏览器展示，其他类型提示下载
+    if content_type.startswith(('text/', 'image/', 'application/pdf', 'application/json')):
+        # 流式返回文件内容，直接在浏览器展示
+        return StreamingHttpResponse(
+            streaming_content=response.iter_content(chunk_size=4096),  # 分块传输
+            content_type=content_type
+        )
+    else:
+        # 非可展示类型，返回下载响应
+        response = StreamingHttpResponse(
+            streaming_content=response.iter_content(chunk_size=4096),
+            content_type=content_type
+        )
+        response['Content-Disposition'] = f'attachment; filename="{object_name}"'
+        return response
