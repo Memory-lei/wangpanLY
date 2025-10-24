@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>容器列表</title>
+    <script type="text/javascript">
+    // 添加容器函数：优化输入判断（避免空名称）+ 特殊字符编码
+    function createContainer() {
+        var name = prompt("请输入容器名称：");
+        if (name && name.trim() !== "") {
+            var encodedName = encodeURIComponent(name.trim());
+            window.location.href = "/index/main1/" + encodedName;
+        } else {
+            alert("容器名称不能为空！");
+        }
+    }
+    </script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/containers.css' %}"/>
+</head>
+<body>
+    <div id="main">
+        <!-- 在容器列表页面的标题区域添加图标 -->
+<h1><img src="{% static 'images/container.png' %}" width="60" height="60" style="vertical-align: middle; margin-right: 10px;">当前可用容器</h1>
+        <hr>
+        <h1>当前可用容器</h1>
+
+        {% if resp1 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>对象数</th>
+                        <th>容器大小</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in resp1 %}
+                    <tr>
+                        <td>{{ key.name }}</td>
+                        <td>{{ key.count }}</td>
+                        <td>
+                            {% if key.bytes < 1024 %}
+                                {{ key.bytes }} B
+                            {% elif key.bytes < 1048576 %}
+                                {{ key.bytes|divisibleby:1024|yesno:"1,key.bytes|floatformat:1" }} KB
+                            {% else %}
+                                {{ key.bytes|divisibleby:1048576|yesno:"1,key.bytes|floatformat:1" }} MB
+                            {% endif %}
+                        </td>
+                        <!-- 格式化显示创建时间 -->
+                        <td>{{ key.create_time|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <input class="butt1" type="button" value="进入" onclick='window.location.href="/objects/{{ key.name|urlencode }}"'>
+                            <input class="butt1" type="button" value="删除" onclick='if(confirm("确定删除容器「{{ key.name }}」吗？删除后数据不可恢复！")) window.location.href="/hmz/main5/{{ key.name|urlencode }}"'>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="action-buttons">
+                <input class="butt1" type="button" value="添加容器" onclick="createContainer();"/>
+            </div>
+
+            <div class="pagination">
+                {% if resp1.has_previous %}
+                    <a href="?page=1">|&lt; 第一页</a>
+                    <a href="?page={{ resp1.previous_page_number }}">前一页</a>
+                {% endif %}
+                <span>第 {{ resp1.number }} 页 / 共 {{ resp1.paginator.num_pages }} 页</span>
+                {% if resp1.has_next %}
+                    <a href="?page={{ resp1.next_page_number }}">下一页</a>
+                    <a href="?page={{ resp1.paginator.num_pages }}">最末页 &gt;|</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="no-data">暂无可用容器，请添加新容器</div>
+            <div class="action-buttons">
+                <input class="butt1" type="button" value="添加容器" onclick="createContainer();"/>
+            </div>
+        {% endif %}
+
+        <div class="logout-section">
+            <a href="/index"><button class="butt">退出登录</button></a>
+        </div>
+    </div>
+</body>
+</html>

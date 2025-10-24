@@ -1,0 +1,187 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+#main {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 标题区域 */
+#main h1 {
+    color: #2c3e50;
+    margin: 15px 0;
+    text-align: center;
+}
+
+#main h1 img {
+    transition: transform 0.3s ease;
+}
+
+#main h1 img:hover {
+    transform: scale(1.05);
+}
+
+/* 分隔线 */
+hr {
+    width: 80%;
+    margin: 20px auto;
+    border: none;
+    height: 2px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(52, 152, 219, 0.75), rgba(0, 0, 0, 0));
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+    padding: 14px;
+    text-align: center;
+    font-weight: 600;
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* 按钮样式 */
+.butt1 {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0 4px;
+    transition: all 0.2s ease;
+}
+
+.butt1:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.butt1[value="删除"] {
+    background-color: #e74c3c;
+}
+
+.butt1[value="添加容器"] {
+    background-color: #2ecc71;
+    padding: 8px 16px;
+    font-size: 15px;
+}
+
+.butt {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.butt:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 分页样式 */
+#main > div:nth-child(5) {
+    margin: 25px 0;
+}
+
+#main > div:nth-child(5) a {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 0 4px;
+    text-decoration: none;
+    color: #3498db;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#main > div:nth-child(5) a:hover {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+#main > div:nth-child(5) span {
+    color: #7f8c8d;
+    font-size: 15px;
+}
+
+/* 无数据提示 */
+#main > div:first-of-type:not(table + div) {
+    font-size: 18px;
+    color: #7f8c8d;
+    padding: 30px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #main {
+        padding: 15px;
+        margin: 10px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    .butt1 {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin: 2px;
+    }
+
+    #main h1 {
+        font-size: 1.5rem;
+    }
+
+    #main h1 img {
+        width: 100px;
+        height: 85px;
+    }
+}

@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swift网盘 - 登录</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Login.css' %}"/>
+</head>
+<body>
+    <div id="login">
+        <div class="title-area">
+            <img src="{% static 'images/admin.jpg' %}" alt="Swift网盘图标">
+            <h1>Swift网盘</h1>
+        </div>
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <label for="username">用户名</label>
+            <input type="text" id="username" placeholder="请输入用户名" name="u" required>
+
+            <label for="password">密码</label>
+            <input type="password" id="password" placeholder="请输入密码" name="p" required>
+
+            <div style="display:none;">
+                <input type="text" name="next_url" value="{{next_url}}"/>
+            </div>
+
+            {% if login_error_msg %}
+                <div id="error-msg">
+                    {{login_error_msg}}
+                </div>
+            {% endif %}
+
+            <button class="but" type="submit">登录</button>
+        </form>
+    </div>
+</body>
+</html>

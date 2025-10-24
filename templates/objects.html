@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件容器管理</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="/static/css/objects.css"/>
+</head>
+<body>
+    <img src="/static/img/back3.jpg">
+    <div id="main">
+        <div class="header">
+            <h1><img src="{% static 'images/doc.jpg' %}" width="110" height="100"/></h1>
+        </div>
+
+        <hr>
+
+        <div class="container-info">
+            <h2>当前容器: {{data2}}</h2>
+        </div>
+
+        {% if resp1 %}
+        <table>
+            <tr>
+                <th>名称</th>
+                <th>日期</th>
+                <th>类型</th>
+                <th>文件大小</th>
+                <th>操作</th>
+            </tr>
+            {% for key in resp1 %}
+            <tr>
+                <td>{{key.name}}</td>
+                <td>{{key.last_modified}}</td>
+                <td>{{key.content_type}}</td>
+                <td>{{key.bytes}}</td>
+                <td>
+                    <input class="butt1" type="button" value="查看"
+                           onclick='window.location.href="/main3/{{data2}}/{{key.name}}/{{key.content_type}}"'>
+                    <input class="butt1" type="button" value="删除"
+                           onclick='window.location.href="/main4/{{data2}}/{{key.name}}"'>
+                    <input class="butt1" type="button" value="下载"
+                           onclick='window.location.href="/download/{{data2}}/{{key.name}}"'>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="pagination">
+            {% if resp1.has_previous %}
+                <a href="?page=1">|&lt; 第一页</a>
+                <a href="?page={{ resp1.previous_page_number }}">前一页</a>
+            {% endif %}
+
+            <span>第 {{resp1.number}} 页 / 共 {{resp1.paginator.num_pages}} 页</span>
+
+            {% if resp1.has_next %}
+                <a href="?page={{resp1.next_page_number}}">下一页</a>
+                <a href="?page={{resp1.paginator.num_pages}}">最末页 &gt;|</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            没有对象
+        </div>
+        {% endif %}
+
+        <div class="upload-form">
+            <form method="post" action="/upload/{{data2}}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="myfile" />
+                <input type="submit" value="上传" />
+            </form>
+        </div>
+
+        <!-- 将返回按钮移动到页面底部，上传表单下方 -->
+        <div class="back-button" style="text-align:center; margin: 30px 0;">
+            <a href="/containers"><button class="butt">返回上级页面</button></a>
+        </div>
+    </div>
+</body>
+</html>
