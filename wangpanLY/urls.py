@@ -33,4 +33,6 @@ urlpatterns = [
     path('upload/<str:container_name>/', views.upload_file),  # 确保路由以斜杠结尾（变量后自带）
     path('download/<container_name>/<object_name>/', views.download_file),  # 文件下载路由
     path('view/<str:container_name>/<path:object_name>/', views.view_file, name='view_file'),
+    path('index/', views.index, name='index'),
+    path('logout/', views.logout, name='logout'),
 ]

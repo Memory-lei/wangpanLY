@@ -1,3 +1,4 @@
+import mimetypes
 from datetime import datetime
 
 from django.shortcuts import render,HttpResponse,redirect
@@ -208,6 +209,11 @@ def upload_file(request, container_name):
 
     return redirect(f'/objects/{container_name}')
 
+def logout(request: HttpRequest):
+
+    request.session.flush()
+
+    return redirect('/index')
 
 # 文件下载功能
 def download_file(request, container_name, object_name):
